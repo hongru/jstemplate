@@ -1,0 +1,17 @@
+<!doctype html>
+<html>
+<meta charset="utf-8" />
+<script src="jstemplate.js"></script>
+<script>
+var test1 = '<a cmd="<%=aa%>"></a>';
+console.log(jstemplate(test1, {aa: 11}));
+
+var test2 = '<ul>\
+<% for (var i = 0; i < list.length; i ++) { %>\
+    <li cmd="<%=list[i].cmd%>"><%=list[i].con%></li>\
+<% } %>\
+</ul>';
+console.log(jstemplate(test2, {list:[{cmd:'a', con:'aa'}, {cmd:'b', con:'bb'}]}))
+
+</script>
+</html>
