@@ -10,6 +10,7 @@
 })('jstemplate', function () {
 
     var context = this,
+        global = typeof window != 'undefined' ? window : {},
         _cache = {},
         vars = 'var ',
         varsInTpl,
@@ -27,7 +28,7 @@
             + ',arguments,let,yield').split(','),
         keyMap = {};
         
-    for (var i = 0; i < keys.length; i ++) {
+    for (var i = 0, len = keys.length; i < len; i ++) {
         keyMap[keys[i]] = 1;
     }
         
@@ -35,7 +36,7 @@
         var openArr = source.split(jstemplate.openTag),
             tmpCode = '';
             
-        for (var i = 0; i < openArr.length; i ++) {
+        for (var i = 0, len = openArr.length; i < len; i ++) {
             var c = openArr[i],
                 cArr = c.split(jstemplate.closeTag);
             if (cArr.length == 1) {
@@ -47,7 +48,7 @@
         }
     
         var code = vars + codeArr[0] + tmpCode + 'return ' + codeArr[3];
-        var fn = new Function('$data', code);
+        var fn = new Function('$data', '$getValue', code);
         
         return fn;
     }
@@ -75,16 +76,20 @@
     function dealWithVars (s) {
         s = s.replace(/\/\*.*?\*\/|'[^']*'|"[^"]*"|\.[\$\w]+/g, '');
         var sarr = s.split(/[^\$\w\d]+/);
-        for (var i = 0; i < sarr.length; i ++) {
+        for (var i = 0, len = sarr.length; i < len; i ++) {
             var c = sarr[i];
             if (!c || keyMap[c] || /^\d/.test(c)) {
                 continue;
             }
             if (!varsInTpl[c]) {
-                vars += (c + '= $data.' + c + ',');
+                vars += (c + '= $getValue("' + c + '", $data),');
                 varsInTpl[c] = 1;
             }
         }
+    }
+    
+    function getValue (v, $data){
+        return $data.hasOwnProperty(v) ? $data[v] : global[v];
     }
 
     function jstemplate (id, source, data) {
@@ -93,7 +98,7 @@
             source = id;
             id = null;
         }
-        return (id && _cache[id]) ? _cache[id](data) : jstemplate.compile(id, source, data);
+        return (id && _cache[id]) ? _cache[id](data, getValue) : jstemplate.compile(id, source, data);
     }
     
     jstemplate.compile = function (id, source, data) {
@@ -105,7 +110,7 @@
             _cache[id] = compileFn;
         }
         //console.log(compileFn)
-        return compileFn(data);
+        return compileFn(data, getValue);
     }
     
     jstemplate.openTag = '<%';
