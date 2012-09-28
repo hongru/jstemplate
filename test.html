@@ -3,12 +3,16 @@
 <meta charset="utf-8" />
 <script src="jstemplate.js"></script>
 <script>
-var test1 = '<a cmd="<%=aa%>"></a>';
+var v = 'vvvvvvvvvvvvvvv';
+var test1 = '<a cmd="<%=aa%>"><%=v%></a>';
 console.log(jstemplate(test1, {aa: 11}));
 
+var g = function (v) {
+    return '[' + v + ']';
+}
 var test2 = '<ul>\
 <% for (var i = 0; i < list.length; i ++) { %>\
-    <li cmd="<%=list[i].cmd%>"><%=list[i].con%></li>\
+    <li cmd="<%=list[i].cmd%>"><%=g(list[i].con)%></li>\
 <% } %>\
 </ul>';
 console.log(jstemplate(test2, {list:[{cmd:'a', con:'aa'}, {cmd:'b', con:'bb'}]}))
