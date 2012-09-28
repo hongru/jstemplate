@@ -1,6 +1,8 @@
 /*!
   * jstemplate: a light & fast js tamplate engine
   * License MIT (c) 岑安
+  * 
+  * Modify by azrael @ 2012/9/28
   */
 
 ;(function (name, definition) {
